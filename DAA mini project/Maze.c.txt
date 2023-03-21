@@ -1,0 +1,254 @@
+#include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+int n;
+int level(){
+    int number,a=11,b=17,c=23;
+    printf("\n1.Easy\n2.Medium\n3.Hard\n4.Exit\nSelect any option: ");
+    scanf("%d",&number);
+    switch(number){
+        case 1:n=a;
+        break;
+        case 2:n=b;
+        break;
+        case 3:n=c;
+        break;
+        case 4:exit(1);
+        default:printf("\ninvalid option.\n");
+        level();
+    }
+    return n;
+    
+}
+void start(){
+    int z;
+    printf("\n**Welcome to the Maze\n");
+    printf("\n1.Start\n2.Rules\nSelect any option:");
+    scanf("%d",&z);
+    if(z==1){
+        level();
+    }else if(z==2){
+        printf("\nhello");
+        printf("\nEnter 1 for Home: ");
+        scanf("%d",&z);
+        if(z==1){
+            start();
+        }
+    }else{
+        printf("\ninvalid option.\n");
+        start();
+    }
+}
+void mazeGen(unsigned char maze[n][n], unsigned char traversed[n][n]);
+void recur(unsigned char maze[n][n], unsigned char traversed[n][n], int xpos, int ypos);
+
+int main()
+{
+    start();
+                   
+                    unsigned char maze[n][n];
+                     for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            if(i==0||i==n-1||j==0||j==n-1){
+                maze[i][j]='#';
+            }
+             else if (i==1&&j==1){
+               maze[i][j]='0';
+                
+            }
+             else if (i==1&&j==2 ||i==n-2&&j==n-3){
+              maze[i][j]=' ';
+                
+            }
+            else if (i==n-2&&j==n-2){
+                maze[i][j]='x';
+            }
+            else if (i%2==0)
+            {
+                maze[i][j]='#';
+            }
+            else if(i%2==1){
+                if(j%2==1){
+                  maze[i][j]=' ';
+                }else{
+                  maze[i][j]='#';  
+                }
+            }
+            }
+        }
+                  
+                   unsigned char traversed[n][n];
+                   for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            if(i==0||i==20||j==0||j==20){
+               traversed[i][j]='#';
+            }
+             else if (i==1&&j==1){
+              traversed[i][j]='0';
+                
+            }
+             else if (i==1&&j==2 || i==n-2&&j==n-3){
+              traversed[i][j]='t';
+                
+            }
+            else if (i==n-2&&j==n-2){
+               traversed[i][j]='x';
+            }
+            else if ((i==1&&j>1&&j<n-1)||(i==n-2&&j>1&&j<n-1))
+            {
+                traversed[i][j]='t';
+            }
+            else if (i%2==1)
+            {
+               traversed[i][j]='t';
+            }
+            else if(i%2==0){
+                if(j%2==1){
+                 traversed[i][j]='t';
+                }else{
+                 traversed[i][j]='#';  
+                }
+            }
+            }
+        }
+       
+                    mazeGen(maze, traversed);
+}
+   
+
+    void mazeGen(unsigned char maze[n][n], unsigned char traversed[n][n])
+    {
+        srand(time(NULL));
+        int xpos = 1;
+        int ypos = 1;
+        
+        maze[xpos][ypos] = 'O';
+       
+        recur(maze, traversed, xpos, ypos);
+       
+        maze[n-2][n-2] = 'X';
+        
+        for(int m = 0; m<n; m++)
+        {
+            for(int k = 0; k<n; k++)
+            {
+                printf("%c", maze[m][k]);
+            }
+            printf("%c", '\n');
+        }
+    }
+    void recur(unsigned char maze[n][n], unsigned char traversed[n][n], int xpos, int ypos)
+    {
+       
+        int randomnumber = rand()%4;
+       
+        while(traversed[xpos-1][ypos-1] == 't'  || traversed[xpos][ypos-1] == 't'  ||
+        traversed[xpos+1][ypos-1] == 't'  || traversed[xpos-1][ypos] == 't'  || traversed[xpos][ypos] == 't'  ||
+        traversed[xpos+1][ypos] == 't'  || traversed[xpos-1][ypos+1] == 't'  || traversed[xpos][ypos+1] == 't'  || traversed[xpos+1][ypos+1] == 't' ){
+   
+        randomnumber = rand()%4;
+       
+        if(randomnumber == 0)
+        {
+            if((xpos >1) && (traversed[xpos-2][ypos] == 't' ))
+            {  
+                xpos--;
+               
+                maze[xpos][ypos] = ' ';
+                
+                traversed[xpos][ypos]= ' ';
+               
+                xpos--;
+               
+                traversed[xpos][ypos]= ' ';
+               
+                recur(maze,traversed, xpos, ypos);
+                
+                xpos+=2;
+            }
+            else if(traversed[xpos-2][ypos] != 't' )
+            {
+                traversed[xpos-1][ypos] = '#';
+            }
+        }
+        else if(randomnumber == 1)
+        {
+            if((xpos <n-2) && (traversed[xpos+2][ypos] == 't' ))
+            {
+
+                xpos++;
+                maze[xpos][ypos] = ' ';
+                traversed[xpos][ypos]= ' ';
+                xpos++;
+                traversed[xpos][ypos]= ' ';
+                recur(maze,traversed, xpos, ypos);
+                xpos-=2;
+            }
+           
+            else if(traversed[xpos+2][ypos] != 't' )
+            {
+                traversed[xpos+1][ypos] = '#';
+            }
+        }
+
+        else if(randomnumber == 2)
+        {
+            if((ypos >1) && (traversed[xpos][ypos-2] == 't' ))
+            {
+               
+                ypos--;
+               
+                maze[xpos][ypos] = ' ';
+                traversed[xpos][ypos]= ' ';
+               
+                ypos--;
+                
+                traversed[xpos][ypos]= ' ';
+                
+                recur(maze,traversed, xpos, ypos);
+                
+                ypos+=2;
+            }
+          
+            else if(traversed[xpos][ypos-2] != 't' )
+            {
+                traversed[xpos][ypos-1] = '#';
+            }
+        }
+
+        else
+        {
+            if((ypos <n-2) && (traversed[xpos][ypos+2] == 't' ))
+            {
+             
+                ypos++;
+               
+                maze[xpos][ypos] = ' ';
+                traversed[xpos][ypos]= ' ';
+               
+                ypos++;
+              
+                traversed[xpos][ypos]= ' ';
+               
+                recur(maze,traversed, xpos, ypos);
+               
+                ypos-=2;
+            }
+           
+            else if(traversed[xpos][ypos+2] != 't' )
+            {
+
+                 traversed[xpos][ypos+1] = '#';
+            }
+        }
+    }
+    // printf("\n1.Enter 1 to try again\n2.Enter 2 for Exit\n--->");
+    // scanf("%d",&n);
+    // if(n==1){
+    //     level();
+    // }else{
+    //     exit(1);
+    // }
+
+}
